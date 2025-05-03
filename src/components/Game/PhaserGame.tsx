@@ -100,7 +100,7 @@ export default class PhaserGame extends Phaser.Scene {
 
     this.timers.push(
       this.time.addEvent({
-        delay: 2000,
+        delay: 3000,
         callback: this.createBug,
         callbackScope: this,
         loop: true,
@@ -263,7 +263,8 @@ export default class PhaserGame extends Phaser.Scene {
       "chain"
     ) as Phaser.Physics.Arcade.Sprite;
     chain.setScale(0.1);
-    chain.setVelocityY(100);
+    const speed = 100 + (60 - this.timeLeft) * 10; // Kecepatan meningkat seiring waktu
+    chain.setVelocityY(speed);
   }
 
   createCoin() {
@@ -274,17 +275,19 @@ export default class PhaserGame extends Phaser.Scene {
     ) as Phaser.Physics.Arcade.Sprite;
 
     coin.setScale(0.05);
-    coin.setVelocityY(100);
+    const speed = 100 + (60 - this.timeLeft) * 10; // Kecepatan meningkat seiring waktu
+    coin.setVelocityY(speed);
   }
 
   createBlueChain() {
-    const block = this.blueChains.create(
+    const blueChain = this.blueChains.create(
       Phaser.Math.Between(100, 700),
       0,
       "blue_chain"
     ) as Phaser.Physics.Arcade.Sprite;
-    block.setScale(0.1);
-    block.setVelocityY(100);
+    blueChain.setScale(0.1);
+    const speed = 100 + (60 - this.timeLeft) * 10; // Kecepatan meningkat seiring waktu
+    blueChain.setVelocityY(speed);
   }
 
   createBug() {
@@ -294,7 +297,8 @@ export default class PhaserGame extends Phaser.Scene {
       "bug"
     ) as Phaser.Physics.Arcade.Sprite;
     bug.setScale(0.1);
-    bug.setVelocityY(100);
+    const speed = 100 + (60 - this.timeLeft) * 10; // Kecepatan meningkat seiring waktu
+    bug.setVelocityY(speed);
   }
 
   createHacker() {
@@ -304,7 +308,8 @@ export default class PhaserGame extends Phaser.Scene {
       "hacker"
     ) as Phaser.Physics.Arcade.Sprite;
     hacker.setScale(0.1);
-    hacker.setVelocityY(100);
+    const speed = 100 + (60 - this.timeLeft) * 10; // Kecepatan meningkat seiring waktu
+    hacker.setVelocityY(speed);
   }
 
   createVirus() {
@@ -314,7 +319,8 @@ export default class PhaserGame extends Phaser.Scene {
       "virus"
     ) as Phaser.Physics.Arcade.Sprite;
     virus.setScale(0.1);
-    virus.setVelocityY(100);
+    const speed = 100 + (60 - this.timeLeft) * 10; // Kecepatan meningkat seiring waktu
+    virus.setVelocityY(speed);
   }
 
   catchCoin(
@@ -323,6 +329,29 @@ export default class PhaserGame extends Phaser.Scene {
   ) {
     const collectSound = this.sound.add("collect-sound");
     collectSound.play();
+
+    // Tampilkan teks poin di posisi coin
+    const points = 5; // Poin yang didapatkan dari coin
+    const pointText = this.add
+      .text(coin.x, coin.y, `+${points}`, {
+        fontStyle: "bold",
+        fontSize: "32px",
+        color: "#00FF00",
+      })
+      .setOrigin(0.5);
+
+    // Animasi teks naik dan menghilang
+    this.tweens.add({
+      targets: pointText,
+      y: coin.y - 50, // Gerakkan ke atas
+      alpha: 0, // Ubah transparansi menjadi 0
+      duration: 500, // Durasi animasi
+      ease: "Power1", // Jenis easing
+      onComplete: () => {
+        pointText.destroy(); // Hancurkan teks setelah animasi selesai
+      },
+    });
+
     coin.destroy();
     this.score += 5;
     this.scoreText.setText(`Score: ${this.score}`);
@@ -335,6 +364,29 @@ export default class PhaserGame extends Phaser.Scene {
   ) {
     const collectSound = this.sound.add("collect-sound");
     collectSound.play();
+
+    // Tampilkan teks poin di posisi coin
+    const points = 10; // Poin yang didapatkan dari coin
+    const pointText = this.add
+      .text(chain.x, chain.y, `+${points}`, {
+        fontStyle: "bold",
+        fontSize: "32px",
+        color: "#00FF00",
+      })
+      .setOrigin(0.5);
+
+    // Animasi teks naik dan menghilang
+    this.tweens.add({
+      targets: pointText,
+      y: chain.y - 50, // Gerakkan ke atas
+      alpha: 0, // Ubah transparansi menjadi 0
+      duration: 500, // Durasi animasi
+      ease: "Power1", // Jenis easing
+      onComplete: () => {
+        pointText.destroy(); // Hancurkan teks setelah animasi selesai
+      },
+    });
+
     chain.destroy();
     this.score += 10;
     this.scoreText.setText(`Score: ${this.score}`);
@@ -347,6 +399,29 @@ export default class PhaserGame extends Phaser.Scene {
   ) {
     const collectSound = this.sound.add("collect-sound");
     collectSound.play();
+
+    // Tampilkan teks poin di posisi coin
+    const points = 3; // Poin yang didapatkan dari coin
+    const pointText = this.add
+      .text(blue_chain.x, blue_chain.y, `+${points}`, {
+        fontStyle: "bold",
+        fontSize: "32px",
+        color: "#00FF00",
+      })
+      .setOrigin(0.5);
+
+    // Animasi teks naik dan menghilang
+    this.tweens.add({
+      targets: pointText,
+      y: blue_chain.y - 50, // Gerakkan ke atas
+      alpha: 0, // Ubah transparansi menjadi 0
+      duration: 500, // Durasi animasi
+      ease: "Power1", // Jenis easing
+      onComplete: () => {
+        pointText.destroy(); // Hancurkan teks setelah animasi selesai
+      },
+    });
+
     blue_chain.destroy();
     this.score += 3;
     this.scoreText.setText(`Score: ${this.score}`);
@@ -359,6 +434,29 @@ export default class PhaserGame extends Phaser.Scene {
   ) {
     const wrongSound = this.sound.add("wrong-sound");
     wrongSound.play();
+
+    // Tampilkan teks poin di posisi coin
+    const points = -3; // Poin yang didapatkan dari coin
+    const pointText = this.add
+      .text(bug.x, bug.y, `+${points}`, {
+        fontStyle: "bold",
+        fontSize: "32px",
+        color: "#ff0000",
+      })
+      .setOrigin(0.5);
+
+    // Animasi teks naik dan menghilang
+    this.tweens.add({
+      targets: pointText,
+      y: bug.y - 50, // Gerakkan ke atas
+      alpha: 0, // Ubah transparansi menjadi 0
+      duration: 500, // Durasi animasi
+      ease: "Power1", // Jenis easing
+      onComplete: () => {
+        pointText.destroy(); // Hancurkan teks setelah animasi selesai
+      },
+    });
+
     bug.destroy();
     this.score -= 3;
     this.scoreText.setText(`Score: ${this.score}`);
@@ -371,6 +469,29 @@ export default class PhaserGame extends Phaser.Scene {
   ) {
     const wrongSound = this.sound.add("wrong-sound");
     wrongSound.play();
+
+    // Tampilkan teks poin di posisi coin
+    const points = -10; // Poin yang didapatkan dari coin
+    const pointText = this.add
+      .text(hacker.x, hacker.y, `+${points}`, {
+        fontStyle: "bold",
+        fontSize: "32px",
+        color: "#ff0000",
+      })
+      .setOrigin(0.5);
+
+    // Animasi teks naik dan menghilang
+    this.tweens.add({
+      targets: pointText,
+      y: hacker.y - 50, // Gerakkan ke atas
+      alpha: 0, // Ubah transparansi menjadi 0
+      duration: 500, // Durasi animasi
+      ease: "Power1", // Jenis easing
+      onComplete: () => {
+        pointText.destroy(); // Hancurkan teks setelah animasi selesai
+      },
+    });
+
     hacker.destroy();
     this.score -= 10;
     this.scoreText.setText(`Score: ${this.score}`);
@@ -383,6 +504,29 @@ export default class PhaserGame extends Phaser.Scene {
   ) {
     const wrongSound = this.sound.add("wrong-sound");
     wrongSound.play();
+
+    // Tampilkan teks poin di posisi coin
+    const points = -5; // Poin yang didapatkan dari coin
+    const pointText = this.add
+      .text(virus.x, virus.y, `+${points}`, {
+        fontStyle: "bold",
+        fontSize: "32px",
+        color: "#ff0000",
+      })
+      .setOrigin(0.5);
+
+    // Animasi teks naik dan menghilang
+    this.tweens.add({
+      targets: pointText,
+      y: virus.y - 50, // Gerakkan ke atas
+      alpha: 0, // Ubah transparansi menjadi 0
+      duration: 500, // Durasi animasi
+      ease: "Power1", // Jenis easing
+      onComplete: () => {
+        pointText.destroy(); // Hancurkan teks setelah animasi selesai
+      },
+    });
+
     virus.destroy();
     this.score -= 5;
     this.scoreText.setText(`Score: ${this.score}`);
