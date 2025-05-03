@@ -7,24 +7,36 @@ export default class PhaserGame extends Phaser.Scene {
   // private coins: Phaser.Physics.Arcade.Sprite[] = [];
   private coins!: Phaser.Physics.Arcade.Group;
   private chains!: Phaser.Physics.Arcade.Group;
+  private score: number = 0;
+  private scoreText!: Phaser.GameObjects.Text;
+  private timeLeft: number = 10;
+  private timerText!: Phaser.GameObjects.Text;
 
   constructor() {
     super({ key: "chain-catcher" });
   }
 
   preload() {
-    this.load.image("coin", "/assets/coin.png"); // pastikan path benar
-    this.load.image("basket", "/assets/basket.png"); // pastikan path benar
-    this.load.image("chain", "/assets/chain.png"); // pastikan path benar
+    // load background
+    // this.load.image("background", "/assets/myartthatdoesntwin.jpg"); 
+    this.load.image("background", "/assets/lab.jpg"); 
+    this.load.image("coin", "/assets/coin.png"); 
+    this.load.image("basket", "/assets/basket.png"); 
+    this.load.image("chain", "/assets/chain.png"); 
   }
 
   create() {
-    this.cameras.main.setBackgroundColor("#ffa500"); // oranye biar kelihatan
+    // Tambahkan background
+    this.add.image(400, 300, "background").setOrigin(0.5, 0.5).scale = 2;
+    // Set ukuran background
+    this.cameras.main.setSize(800, 600);
+    this.cameras.main.setBounds(0, 0, 800, 600);
+
     this.physics.world.setBounds(0, 0, 800, 600);
 
     // Tambahkan keranjang
-    this.basket = this.physics.add.sprite(400, 500, "basket");
-    this.basket.setDisplaySize(200, 50); // width, height
+    this.basket = this.physics.add.sprite(400, 600, "basket");
+    this.basket.setDisplaySize(200, 100); // width, height
     this.basket.setCollideWorldBounds(true); // Biar tidak keluar layar
     this.basket.setImmovable(true);
 
@@ -82,6 +94,31 @@ export default class PhaserGame extends Phaser.Scene {
       undefined,
       this
     );
+
+    this.scoreText = this.add.text(16, 16, "Score: 0", {
+      fontSize: "32px",
+      color: "#fff",
+    });
+
+    this.timerText = this.add.text(600, 16, "Time: 60", {
+      fontSize: "32px",
+      color: "#fff",
+    });
+
+    this.time.addEvent({
+      delay: 1000,
+      callback: () => {
+        this.timeLeft--;
+        this.timerText.setText(`Time: ${this.timeLeft}`);
+        if (this.timeLeft <= 0) {
+          this.gameOver();
+        }
+      },
+      callbackScope: this,
+      loop: true,
+    });
+
+    this.game.events.emit("ready");
   }
 
   update() {
@@ -135,8 +172,9 @@ export default class PhaserGame extends Phaser.Scene {
     basket: Phaser.Physics.Arcade.Sprite,
     coin: Phaser.Physics.Arcade.Sprite
   ) {
-    // Ketika coin tertangkap keranjang, kita hapus coin tersebut
     coin.destroy();
+    this.score += 5;
+    this.scoreText.setText(`Score: ${this.score}`);
     console.log("Coin caught!");
   }
 
@@ -144,8 +182,27 @@ export default class PhaserGame extends Phaser.Scene {
     basket: Phaser.Physics.Arcade.Sprite,
     chain: Phaser.Physics.Arcade.Sprite
   ) {
-    // Ketika coin tertangkap keranjang, kita hapus coin tersebut
     chain.destroy();
+    this.score += 10;
+    this.scoreText.setText(`Score: ${this.score}`);
     console.log("Chain caught!");
+  }
+
+  private gameOver() {
+    this.physics.pause();
+    this.coins.clear(true, true);
+    this.chains.clear(true, true);
+
+    this.add.text(300, 250, "Game Over", {
+      fontSize: "48px",
+      color: "#ff0000",
+    });
+    this.add.text(280, 320, `Final Score: ${this.score}`, {
+      fontSize: "32px",
+      color: "#ffffff",
+    });
+
+    // 👇 Emit event agar React tahu game over
+    this.events.emit("gameover", { score: this.score });
   }
 }
