@@ -7,10 +7,15 @@ export default class PhaserGame extends Phaser.Scene {
   // private coins: Phaser.Physics.Arcade.Sprite[] = [];
   private coins!: Phaser.Physics.Arcade.Group;
   private chains!: Phaser.Physics.Arcade.Group;
+  private blueChains!: Phaser.Physics.Arcade.Group;
+  private bugs!: Phaser.Physics.Arcade.Group;
+  private hackers!: Phaser.Physics.Arcade.Group;
+  private viruses!: Phaser.Physics.Arcade.Group;
   private score: number = 0;
   private scoreText!: Phaser.GameObjects.Text;
-  private timeLeft: number = 10;
+  private timeLeft: number = 60;
   private timerText!: Phaser.GameObjects.Text;
+  private timers: Phaser.Time.TimerEvent[] = [];
 
   constructor() {
     super({ key: "chain-catcher" });
@@ -18,11 +23,15 @@ export default class PhaserGame extends Phaser.Scene {
 
   preload() {
     // load background
-    // this.load.image("background", "/assets/myartthatdoesntwin.jpg"); 
-    this.load.image("background", "/assets/lab.jpg"); 
-    this.load.image("coin", "/assets/coin.png"); 
-    this.load.image("basket", "/assets/basket.png"); 
-    this.load.image("chain", "/assets/chain.png"); 
+    // this.load.image("background", "/assets/myartthatdoesntwin.jpg");
+    this.load.image("background", "/assets/lab.jpg");
+    this.load.image("coin", "/assets/coin.png");
+    this.load.image("basket", "/assets/basket.png");
+    this.load.image("chain", "/assets/chain.png");
+    this.load.image("blue_chain", "/assets/blue_chain.png");
+    this.load.image("bug", "/assets/bug.png");
+    this.load.image("hacker", "/assets/hacker.png");
+    this.load.image("virus", "/assets/virus.png");
   }
 
   create() {
@@ -42,6 +51,10 @@ export default class PhaserGame extends Phaser.Scene {
 
     this.coins = this.physics.add.group();
     this.chains = this.physics.add.group();
+    this.blueChains = this.physics.add.group();
+    this.bugs = this.physics.add.group();
+    this.hackers = this.physics.add.group();
+    this.viruses = this.physics.add.group();
 
     // Keyboard control
     const cursors = this.input.keyboard?.createCursorKeys();
@@ -50,25 +63,74 @@ export default class PhaserGame extends Phaser.Scene {
     }
     this.cursors = cursors;
 
-    // Buat coin jatuh secara acak terus-menerus
-    this.time.addEvent({
-      delay: 1000, // setiap 1 detik
-      callback: () => {
-        this.createCoin();
-      },
-      callbackScope: this,
-      loop: true,
-    });
+    this.timers.push(
+      this.time.addEvent({
+        delay: 1000,
+        callback: this.createCoin,
+        callbackScope: this,
+        loop: true,
+      })
+    );
 
-    // Buat chain jatuh secara acak terus-menerus
-    this.time.addEvent({
-      delay: 2000, // setiap 2 detik
-      callback: () => {
-        this.createChain();
-      },
-      callbackScope: this,
-      loop: true,
-    });
+    this.timers.push(
+      this.time.addEvent({
+        delay: 2000,
+        callback: this.createChain,
+        callbackScope: this,
+        loop: true,
+      })
+    );
+
+    this.timers.push(
+      this.time.addEvent({
+        delay: 500,
+        callback: this.createBlueChain,
+        callbackScope: this,
+        loop: true,
+      })
+    );
+
+    this.timers.push(
+      this.time.addEvent({
+        delay: 2000,
+        callback: this.createBug,
+        callbackScope: this,
+        loop: true,
+      })
+    );
+
+    this.timers.push(
+      this.time.addEvent({
+        delay: 4000,
+        callback: this.createHacker,
+        callbackScope: this,
+        loop: true,
+      })
+    );
+
+    this.timers.push(
+      this.time.addEvent({
+        delay: 5000,
+        callback: this.createVirus,
+        callbackScope: this,
+        loop: true,
+      })
+    );
+
+    this.timers.push(
+      this.time.addEvent({
+        delay: 1000,
+        callback: () => {
+          this.timeLeft--;
+          this.timerText.setText(`Time: ${this.timeLeft}`);
+          if (this.timeLeft <= 0) {
+            this.gameOver();
+          }
+        },
+        callbackScope: this,
+        loop: true,
+      })
+    );
 
     // Menambahkan collider untuk mendeteksi tabrakan antara keranjang dan coin
     this.physics.add.overlap(
@@ -95,6 +157,54 @@ export default class PhaserGame extends Phaser.Scene {
       this
     );
 
+    this.physics.add.overlap(
+      this.basket,
+      this.blueChains,
+      (basket, blueChains) =>
+        this.catchBlueChain(
+          basket as Phaser.Physics.Arcade.Sprite,
+          blueChains as Phaser.Physics.Arcade.Sprite
+        ),
+      undefined,
+      this
+    );
+
+    this.physics.add.overlap(
+      this.basket,
+      this.bugs,
+      (basket, bug) =>
+        this.catchBug(
+          basket as Phaser.Physics.Arcade.Sprite,
+          bug as Phaser.Physics.Arcade.Sprite
+        ),
+      undefined,
+      this
+    );
+
+    this.physics.add.overlap(
+      this.basket,
+      this.hackers,
+      (basket, hacker) =>
+        this.catchHacker(
+          basket as Phaser.Physics.Arcade.Sprite,
+          hacker as Phaser.Physics.Arcade.Sprite
+        ),
+      undefined,
+      this
+    );
+
+    this.physics.add.overlap(
+      this.basket,
+      this.viruses,
+      (basket, virus) =>
+        this.catchVirus(
+          basket as Phaser.Physics.Arcade.Sprite,
+          virus as Phaser.Physics.Arcade.Sprite
+        ),
+      undefined,
+      this
+    );
+
     this.scoreText = this.add.text(16, 16, "Score: 0", {
       fontSize: "32px",
       color: "#fff",
@@ -105,20 +215,8 @@ export default class PhaserGame extends Phaser.Scene {
       color: "#fff",
     });
 
-    this.time.addEvent({
-      delay: 1000,
-      callback: () => {
-        this.timeLeft--;
-        this.timerText.setText(`Time: ${this.timeLeft}`);
-        if (this.timeLeft <= 0) {
-          this.gameOver();
-        }
-      },
-      callbackScope: this,
-      loop: true,
-    });
-
     this.game.events.emit("ready");
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.shutdown, this);
   }
 
   update() {
@@ -132,18 +230,19 @@ export default class PhaserGame extends Phaser.Scene {
       this.basket.setVelocityX(0);
     }
 
-    this.coins.getChildren().forEach((coin) => {
-      const c = coin as Phaser.Physics.Arcade.Sprite;
-      if (c.y > 600) {
-        c.destroy();
-      }
-    });
-
-    this.chains.getChildren().forEach((chain) => {
-      const c = chain as Phaser.Physics.Arcade.Sprite;
-      if (c.y > 600) {
-        c.destroy();
-      }
+    [
+      this.blueChains,
+      this.bugs,
+      this.hackers,
+      this.viruses,
+      this.coins,
+      this.chains,
+    ].forEach((group) => {
+      group.getChildren().forEach((item) => {
+        if ((item as Phaser.Physics.Arcade.Sprite).y > 600) {
+          item.destroy();
+        }
+      });
     });
   }
 
@@ -164,8 +263,48 @@ export default class PhaserGame extends Phaser.Scene {
       "coin"
     ) as Phaser.Physics.Arcade.Sprite;
 
-    coin.setScale(0.1);
+    coin.setScale(0.05);
     coin.setVelocityY(100);
+  }
+
+  createBlueChain() {
+    const block = this.blueChains.create(
+      Phaser.Math.Between(100, 700),
+      0,
+      "blue_chain"
+    ) as Phaser.Physics.Arcade.Sprite;
+    block.setScale(0.1);
+    block.setVelocityY(100);
+  }
+
+  createBug() {
+    const bug = this.bugs.create(
+      Phaser.Math.Between(100, 700),
+      0,
+      "bug"
+    ) as Phaser.Physics.Arcade.Sprite;
+    bug.setScale(0.1);
+    bug.setVelocityY(100);
+  }
+
+  createHacker() {
+    const hacker = this.hackers.create(
+      Phaser.Math.Between(100, 700),
+      0,
+      "hacker"
+    ) as Phaser.Physics.Arcade.Sprite;
+    hacker.setScale(0.1);
+    hacker.setVelocityY(100);
+  }
+
+  createVirus() {
+    const virus = this.viruses.create(
+      Phaser.Math.Between(100, 700),
+      0,
+      "virus"
+    ) as Phaser.Physics.Arcade.Sprite;
+    virus.setScale(0.1);
+    virus.setVelocityY(100);
   }
 
   catchCoin(
@@ -188,10 +327,59 @@ export default class PhaserGame extends Phaser.Scene {
     console.log("Chain caught!");
   }
 
+  catchBlueChain(
+    basket: Phaser.Physics.Arcade.Sprite,
+    blue_chain: Phaser.Physics.Arcade.Sprite
+  ) {
+    blue_chain.destroy();
+    this.score += 3;
+    this.scoreText.setText(`Score: ${this.score}`);
+    console.log("Block caught!");
+  }
+
+  catchBug(
+    basket: Phaser.Physics.Arcade.Sprite,
+    bug: Phaser.Physics.Arcade.Sprite
+  ) {
+    bug.destroy();
+    this.score -= 3;
+    this.scoreText.setText(`Score: ${this.score}`);
+    console.log("Bug caught!");
+  }
+
+  catchHacker(
+    basket: Phaser.Physics.Arcade.Sprite,
+    hacker: Phaser.Physics.Arcade.Sprite
+  ) {
+    hacker.destroy();
+    this.score -= 10;
+    this.scoreText.setText(`Score: ${this.score}`);
+    console.log("Hacker caught!");
+  }
+
+  catchVirus(
+    basket: Phaser.Physics.Arcade.Sprite,
+    virus: Phaser.Physics.Arcade.Sprite
+  ) {
+    virus.destroy();
+    this.score -= 5;
+    this.scoreText.setText(`Score: ${this.score}`);
+    console.log("Virus caught!");
+  }
+
   private gameOver() {
     this.physics.pause();
+
+    // Hentikan semua timer
+    this.timers.forEach((timer) => timer.remove());
+    this.timers = [];
+
     this.coins.clear(true, true);
     this.chains.clear(true, true);
+    this.blueChains.clear(true, true);
+    this.bugs.clear(true, true);
+    this.hackers.clear(true, true);
+    this.viruses.clear(true, true);
 
     this.add.text(300, 250, "Game Over", {
       fontSize: "48px",
@@ -202,7 +390,27 @@ export default class PhaserGame extends Phaser.Scene {
       color: "#ffffff",
     });
 
-    // 👇 Emit event agar React tahu game over
     this.events.emit("gameover", { score: this.score });
+  }
+
+  shutdown() {
+    // Hentikan semua timer jika belum dihentikan
+    this.timers.forEach((timer) => timer.remove());
+    this.timers = [];
+
+    // Hancurkan semua grup objek
+    this.coins.clear(true, true);
+    this.chains.clear(true, true);
+    this.blueChains.clear(true, true);
+    this.bugs.clear(true, true);
+    this.hackers.clear(true, true);
+    this.viruses.clear(true, true);
+
+    // Hancurkan objek teks jika masih ada
+    this.scoreText?.destroy();
+    this.timerText?.destroy();
+
+    // Hancurkan keranjang jika masih ada
+    this.basket?.destroy();
   }
 }
