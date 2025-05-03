@@ -11,8 +11,8 @@ export default function GameCanvas({ setGameOver }: GameCanvasProps) {
   useEffect(() => {
     const config: Phaser.Types.Core.GameConfig = {
       type: Phaser.AUTO,
-      width: 800,
-      height: 600,
+      width: Math.min(window.innerWidth, 800),
+      height: window.innerHeight,
       parent: "game-container",
       scene: [PhaserGame],
       physics: {
@@ -32,7 +32,13 @@ export default function GameCanvas({ setGameOver }: GameCanvasProps) {
       });
     });
 
+    const handleResize = () => {
+      game.scale.resize(Math.min(window.innerWidth, 800), window.innerHeight);
+    };
+    window.addEventListener("resize", handleResize);
+
     return () => {
+      window.removeEventListener("resize", handleResize);
       game.destroy(true);
     };
   }, [setGameOver]);

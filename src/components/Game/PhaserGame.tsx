@@ -18,6 +18,14 @@ export default class PhaserGame extends Phaser.Scene {
   // private collectSound!: Phaser.Sound.BaseSound;
   // private wrongSound!: Phaser.Sound.BaseSound;
 
+  private coinDelay: number = 1000;
+  private chainDelay: number = 2000;
+  private blueChainDelay: number = 500;
+  private bugDelay: number = 3000;
+  private hackerDelay: number = 4000;
+  private virusDelay: number = 5000;
+  private hasIncreasedSpawn: boolean = false;
+
   constructor() {
     super({ key: "chain-catcher" });
   }
@@ -41,18 +49,19 @@ export default class PhaserGame extends Phaser.Scene {
   create() {
     // Tambahkan background
     this.add.image(400, 300, "background").setOrigin(0.5, 0.5).scale = 1;
+    this.hasIncreasedSpawn = false;
 
     // set sound
     // this.collectSound = this.sound.add("collect-sound");
     // this.wrongSound = this.sound.add("wrong-sound");
     // Set ukuran background
-    this.cameras.main.setSize(800, 600);
-    this.cameras.main.setBounds(0, 0, 800, 600);
+    this.cameras.main.setSize(800, window.innerHeight);
+    this.cameras.main.setBounds(0, 0, 800, window.innerHeight);
 
-    this.physics.world.setBounds(0, 0, 800, 600);
+    this.physics.world.setBounds(0, 0, 800, window.innerHeight);
 
     // Tambahkan keranjang
-    this.basket = this.physics.add.sprite(400, 600, "basket");
+    this.basket = this.physics.add.sprite(400, window.innerHeight, "basket");
     this.basket.setDisplaySize(100, 100); // width, height
     this.basket.setCollideWorldBounds(true); // Biar tidak keluar layar
     this.basket.setImmovable(true);
@@ -71,9 +80,20 @@ export default class PhaserGame extends Phaser.Scene {
     }
     this.cursors = cursors;
 
+    this.input.on("pointerdown", (pointer: Phaser.Input.Pointer) => {
+      const width = Number(this.game.config.width);
+      if (pointer.x < width / 2) {
+        // Sentuhan di sisi kiri
+        this.moveLeft();
+      } else {
+        // Sentuhan di sisi kanan
+        this.moveRight();
+      }
+    });
+
     this.timers.push(
       this.time.addEvent({
-        delay: 1000,
+        delay: this.coinDelay,
         callback: this.createCoin,
         callbackScope: this,
         loop: true,
@@ -82,7 +102,7 @@ export default class PhaserGame extends Phaser.Scene {
 
     this.timers.push(
       this.time.addEvent({
-        delay: 2000,
+        delay: this.chainDelay,
         callback: this.createChain,
         callbackScope: this,
         loop: true,
@@ -91,7 +111,7 @@ export default class PhaserGame extends Phaser.Scene {
 
     this.timers.push(
       this.time.addEvent({
-        delay: 500,
+        delay: this.blueChainDelay,
         callback: this.createBlueChain,
         callbackScope: this,
         loop: true,
@@ -100,7 +120,7 @@ export default class PhaserGame extends Phaser.Scene {
 
     this.timers.push(
       this.time.addEvent({
-        delay: 3000,
+        delay: this.bugDelay,
         callback: this.createBug,
         callbackScope: this,
         loop: true,
@@ -109,7 +129,7 @@ export default class PhaserGame extends Phaser.Scene {
 
     this.timers.push(
       this.time.addEvent({
-        delay: 4000,
+        delay: this.hackerDelay,
         callback: this.createHacker,
         callbackScope: this,
         loop: true,
@@ -118,7 +138,7 @@ export default class PhaserGame extends Phaser.Scene {
 
     this.timers.push(
       this.time.addEvent({
-        delay: 5000,
+        delay: this.virusDelay,
         callback: this.createVirus,
         callbackScope: this,
         loop: true,
@@ -229,6 +249,13 @@ export default class PhaserGame extends Phaser.Scene {
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.shutdown, this);
   }
 
+  moveLeft() {
+    this.basket.setVelocityX(-300);
+  }
+  moveRight() {
+    this.basket.setVelocityX(300);
+  }
+
   update() {
     const speed = 300;
 
@@ -240,6 +267,16 @@ export default class PhaserGame extends Phaser.Scene {
       this.basket.setVelocityX(0);
     }
 
+    // membuat gerakan dengan touch
+    if (this.input.activePointer.isDown) {
+      const width = Number(this.game.config.width);
+      if (this.input.x < width / 2) {
+        this.moveLeft();
+      } else {
+        this.moveRight();
+      }
+    }
+
     [
       this.blueChains,
       this.bugs,
@@ -249,11 +286,69 @@ export default class PhaserGame extends Phaser.Scene {
       this.chains,
     ].forEach((group) => {
       group.getChildren().forEach((item) => {
-        if ((item as Phaser.Physics.Arcade.Sprite).y > 600) {
+        if ((item as Phaser.Physics.Arcade.Sprite).y > window.innerHeight) {
           item.destroy();
         }
       });
     });
+
+    if (this.timeLeft === 30 && !this.hasIncreasedSpawn) {
+      this.hasIncreasedSpawn = true;
+
+      // will leave it here for now
+      // this.timers.forEach((timer) => timer.remove());
+      // this.timers = [];
+
+      // Add new timers with increased spawn rates
+      this.timers.push(
+        this.time.addEvent({
+          delay: this.coinDelay * 0.5,
+          callback: this.createCoin,
+          callbackScope: this,
+          loop: true,
+        })
+      );
+      this.timers.push(
+        this.time.addEvent({
+          delay: this.chainDelay * 0.5,
+          callback: this.createChain,
+          callbackScope: this,
+          loop: true,
+        })
+      );
+      this.timers.push(
+        this.time.addEvent({
+          delay: this.blueChainDelay * 0.5,
+          callback: this.createBlueChain,
+          callbackScope: this,
+          loop: true,
+        })
+      );
+      this.timers.push(
+        this.time.addEvent({
+          delay: this.bugDelay * 0.5,
+          callback: this.createBug,
+          callbackScope: this,
+          loop: true,
+        })
+      );
+      this.timers.push(
+        this.time.addEvent({
+          delay: this.hackerDelay * 0.5,
+          callback: this.createHacker,
+          callbackScope: this,
+          loop: true,
+        })
+      );
+      this.timers.push(
+        this.time.addEvent({
+          delay: this.virusDelay * 0.5,
+          callback: this.createVirus,
+          callbackScope: this,
+          loop: true,
+        })
+      );
+    }
   }
 
   createChain() {
