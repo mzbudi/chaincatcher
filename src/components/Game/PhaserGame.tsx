@@ -13,9 +13,11 @@ export default class PhaserGame extends Phaser.Scene {
   private viruses!: Phaser.Physics.Arcade.Group;
   private score: number = 0;
   private scoreText!: Phaser.GameObjects.Text;
-  private timeLeft: number = 60;
+  private timeLeft: number = 2;
   private timerText!: Phaser.GameObjects.Text;
   private timers: Phaser.Time.TimerEvent[] = [];
+  private collectSound!: Phaser.Sound.BaseSound;
+  private wrongSound!: Phaser.Sound.BaseSound;
 
   constructor() {
     super({ key: "chain-catcher" });
@@ -32,11 +34,18 @@ export default class PhaserGame extends Phaser.Scene {
     this.load.image("bug", "/assets/bug.png");
     this.load.image("hacker", "/assets/hacker.png");
     this.load.image("virus", "/assets/virus.png");
+    // load sound
+    this.load.audio("collect-sound", "/audio/collect.mp3");
+    this.load.audio("wrong-sound", "/audio/wrong.mp3");
   }
 
   create() {
     // Tambahkan background
-    this.add.image(400, 300, "background").setOrigin(0.5, 0.5).scale = 2;
+    this.add.image(400, 300, "background").setOrigin(0.5, 0.5).scale = 1;
+
+    // set sound
+    this.collectSound = this.sound.add("collect-sound");
+    this.wrongSound = this.sound.add("wrong-sound");
     // Set ukuran background
     this.cameras.main.setSize(800, 600);
     this.cameras.main.setBounds(0, 0, 800, 600);
@@ -45,7 +54,7 @@ export default class PhaserGame extends Phaser.Scene {
 
     // Tambahkan keranjang
     this.basket = this.physics.add.sprite(400, 600, "basket");
-    this.basket.setDisplaySize(200, 100); // width, height
+    this.basket.setDisplaySize(100, 100); // width, height
     this.basket.setCollideWorldBounds(true); // Biar tidak keluar layar
     this.basket.setImmovable(true);
 
@@ -206,13 +215,15 @@ export default class PhaserGame extends Phaser.Scene {
     );
 
     this.scoreText = this.add.text(16, 16, "Score: 0", {
+      fontStyle: "bold",
       fontSize: "32px",
-      color: "#fff",
+      color: "#000000",
     });
 
     this.timerText = this.add.text(600, 16, "Time: 60", {
+      fontStyle: "bold",
       fontSize: "32px",
-      color: "#fff",
+      color: "#000000",
     });
 
     this.game.events.emit("ready");
@@ -311,6 +322,8 @@ export default class PhaserGame extends Phaser.Scene {
     basket: Phaser.Physics.Arcade.Sprite,
     coin: Phaser.Physics.Arcade.Sprite
   ) {
+    const collectSound = this.sound.add("collect-sound");
+    collectSound.play();
     coin.destroy();
     this.score += 5;
     this.scoreText.setText(`Score: ${this.score}`);
@@ -321,6 +334,8 @@ export default class PhaserGame extends Phaser.Scene {
     basket: Phaser.Physics.Arcade.Sprite,
     chain: Phaser.Physics.Arcade.Sprite
   ) {
+    const collectSound = this.sound.add("collect-sound");
+    collectSound.play();
     chain.destroy();
     this.score += 10;
     this.scoreText.setText(`Score: ${this.score}`);
@@ -331,6 +346,8 @@ export default class PhaserGame extends Phaser.Scene {
     basket: Phaser.Physics.Arcade.Sprite,
     blue_chain: Phaser.Physics.Arcade.Sprite
   ) {
+    const collectSound = this.sound.add("collect-sound");
+    collectSound.play();
     blue_chain.destroy();
     this.score += 3;
     this.scoreText.setText(`Score: ${this.score}`);
@@ -341,6 +358,8 @@ export default class PhaserGame extends Phaser.Scene {
     basket: Phaser.Physics.Arcade.Sprite,
     bug: Phaser.Physics.Arcade.Sprite
   ) {
+    const wrongSound = this.sound.add("wrong-sound");
+    wrongSound.play();
     bug.destroy();
     this.score -= 3;
     this.scoreText.setText(`Score: ${this.score}`);
@@ -351,6 +370,8 @@ export default class PhaserGame extends Phaser.Scene {
     basket: Phaser.Physics.Arcade.Sprite,
     hacker: Phaser.Physics.Arcade.Sprite
   ) {
+    const wrongSound = this.sound.add("wrong-sound");
+    wrongSound.play();
     hacker.destroy();
     this.score -= 10;
     this.scoreText.setText(`Score: ${this.score}`);
@@ -361,6 +382,8 @@ export default class PhaserGame extends Phaser.Scene {
     basket: Phaser.Physics.Arcade.Sprite,
     virus: Phaser.Physics.Arcade.Sprite
   ) {
+    const wrongSound = this.sound.add("wrong-sound");
+    wrongSound.play();
     virus.destroy();
     this.score -= 5;
     this.scoreText.setText(`Score: ${this.score}`);
@@ -382,12 +405,14 @@ export default class PhaserGame extends Phaser.Scene {
     this.viruses.clear(true, true);
 
     this.add.text(300, 250, "Game Over", {
+      fontStyle: "bold",
       fontSize: "48px",
       color: "#ff0000",
     });
     this.add.text(280, 320, `Final Score: ${this.score}`, {
+      fontStyle: "bold",
       fontSize: "32px",
-      color: "#ffffff",
+      color: "#ff0000",
     });
 
     this.events.emit("gameover", { score: this.score });
