@@ -1,4 +1,3 @@
-// src/components/PhaserGame.ts
 import Phaser from "phaser";
 
 export default class PhaserGame extends Phaser.Scene {
@@ -13,11 +12,11 @@ export default class PhaserGame extends Phaser.Scene {
   private viruses!: Phaser.Physics.Arcade.Group;
   private score: number = 0;
   private scoreText!: Phaser.GameObjects.Text;
-  private timeLeft: number = 2;
+  private timeLeft: number = 60;
   private timerText!: Phaser.GameObjects.Text;
   private timers: Phaser.Time.TimerEvent[] = [];
-  private collectSound!: Phaser.Sound.BaseSound;
-  private wrongSound!: Phaser.Sound.BaseSound;
+  // private collectSound!: Phaser.Sound.BaseSound;
+  // private wrongSound!: Phaser.Sound.BaseSound;
 
   constructor() {
     super({ key: "chain-catcher" });
@@ -44,8 +43,8 @@ export default class PhaserGame extends Phaser.Scene {
     this.add.image(400, 300, "background").setOrigin(0.5, 0.5).scale = 1;
 
     // set sound
-    this.collectSound = this.sound.add("collect-sound");
-    this.wrongSound = this.sound.add("wrong-sound");
+    // this.collectSound = this.sound.add("collect-sound");
+    // this.wrongSound = this.sound.add("wrong-sound");
     // Set ukuran background
     this.cameras.main.setSize(800, 600);
     this.cameras.main.setBounds(0, 0, 800, 600);
@@ -319,7 +318,7 @@ export default class PhaserGame extends Phaser.Scene {
   }
 
   catchCoin(
-    basket: Phaser.Physics.Arcade.Sprite,
+    _basket: Phaser.Physics.Arcade.Sprite,
     coin: Phaser.Physics.Arcade.Sprite
   ) {
     const collectSound = this.sound.add("collect-sound");
@@ -331,7 +330,7 @@ export default class PhaserGame extends Phaser.Scene {
   }
 
   catchChain(
-    basket: Phaser.Physics.Arcade.Sprite,
+    _basket: Phaser.Physics.Arcade.Sprite,
     chain: Phaser.Physics.Arcade.Sprite
   ) {
     const collectSound = this.sound.add("collect-sound");
@@ -343,7 +342,7 @@ export default class PhaserGame extends Phaser.Scene {
   }
 
   catchBlueChain(
-    basket: Phaser.Physics.Arcade.Sprite,
+    _basket: Phaser.Physics.Arcade.Sprite,
     blue_chain: Phaser.Physics.Arcade.Sprite
   ) {
     const collectSound = this.sound.add("collect-sound");
@@ -355,7 +354,7 @@ export default class PhaserGame extends Phaser.Scene {
   }
 
   catchBug(
-    basket: Phaser.Physics.Arcade.Sprite,
+    _basket: Phaser.Physics.Arcade.Sprite,
     bug: Phaser.Physics.Arcade.Sprite
   ) {
     const wrongSound = this.sound.add("wrong-sound");
@@ -367,7 +366,7 @@ export default class PhaserGame extends Phaser.Scene {
   }
 
   catchHacker(
-    basket: Phaser.Physics.Arcade.Sprite,
+    _basket: Phaser.Physics.Arcade.Sprite,
     hacker: Phaser.Physics.Arcade.Sprite
   ) {
     const wrongSound = this.sound.add("wrong-sound");
@@ -379,7 +378,7 @@ export default class PhaserGame extends Phaser.Scene {
   }
 
   catchVirus(
-    basket: Phaser.Physics.Arcade.Sprite,
+    _basket: Phaser.Physics.Arcade.Sprite,
     virus: Phaser.Physics.Arcade.Sprite
   ) {
     const wrongSound = this.sound.add("wrong-sound");

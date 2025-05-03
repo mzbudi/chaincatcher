@@ -1,60 +1,17 @@
-import { useEffect, useState } from "react";
-import Menu from "./components/Menu/Menu";
-import GameCanvas from "./components/Game/GameCanvas";
-import { playBackgroundMusic } from "./components/Bgm/audio"; // Import fungsi untuk memutar musik latar
+import { useState } from "react";
+import SplashScreen from "./components/SplashScreen/SplashScreen";
+import MainMenu from "./components/Menu/MainMenu";
 
 function App() {
-  const [started, setStarted] = useState(false);
-  const [gameOver, setGameOver] = useState(false);
-  const [gameKey, setGameKey] = useState(0);
-
-  useEffect(() => {
-    playBackgroundMusic();
-  }, []);
-
-  const handleStart = () => {
-    playBackgroundMusic();
-    setStarted(true);
-    setGameOver(false); // Reset game over state jika mulai permainan baru
-  };
-
-  const handleBackToMenu = () => {
-    setStarted(false);
-    setGameOver(false); // Reset game over state jika kembali ke menu
-  };
-
-  const handlePlayAgain = () => {
-    setGameOver(false);
-    setGameKey((prevKey) => prevKey + 1); // Update game key untuk memicu rerender
-  };
+  const [screen, setScreen] = useState<"splash" | "menu">("splash");
 
   return (
-    <div className="App min-h-screen bg-orange-200 flex flex-col items-center justify-center">
-      {!started && !gameOver ? (
-        <Menu onStart={handleStart} />
-      ) : (
-        <>
-          <GameCanvas key={gameKey} setGameOver={setGameOver} />
-
-          {gameOver && (
-            <div className="absolute top-3/4 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center space-x-4">
-              <button
-                className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-xl text-lg font-semibold"
-                onClick={handlePlayAgain}
-              >
-                Play Again
-              </button>
-              <button
-                className="bg-gray-500 hover:bg-green-600 text-white px-6 py-2 rounded-xl text-lg font-semibold"
-                onClick={handleBackToMenu}
-              >
-                Back to Menu
-              </button>
-            </div>
-          )}
-        </>
+    <>
+      {screen === "splash" && (
+        <SplashScreen onStart={() => setScreen("menu")} />
       )}
-    </div>
+      {screen === "menu" && <MainMenu />}
+    </>
   );
 }
 
