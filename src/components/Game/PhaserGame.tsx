@@ -48,20 +48,47 @@ export default class PhaserGame extends Phaser.Scene {
 
   create() {
     // Tambahkan background
-    this.add.image(400, 300, "background").setOrigin(0.5, 0.5).scale = 1;
+    const image = this.add.image(400, 300, "background").setOrigin(0.5, 0.5);
+    // buat gambar menjadi fullscreen/ stretch
+    if (this.scale.gameSize.width < 800) {
+      image.setScale(
+        Math.max(
+          this.scale.gameSize.width / 800,
+          this.scale.gameSize.height / 600
+        )
+      );
+    } else {
+      image.setScale(1);
+    }
+    image.setDepth(-1); // Set depth to -1 to render behind other objects
     this.hasIncreasedSpawn = false;
 
-    // set sound
-    // this.collectSound = this.sound.add("collect-sound");
-    // this.wrongSound = this.sound.add("wrong-sound");
-    // Set ukuran background
-    this.cameras.main.setSize(800, window.innerHeight);
-    this.cameras.main.setBounds(0, 0, 800, window.innerHeight);
+    this.cameras.main.setSize(
+      Math.min(this.scale.gameSize.width, 800),
+      this.scale.gameSize.height
+    );
+    this.cameras.main.setBounds(
+      0,
+      0,
+      Math.min(this.scale.gameSize.width, 800),
+      this.scale.gameSize.height
+    );
 
-    this.physics.world.setBounds(0, 0, 800, window.innerHeight);
+    this.physics.world.setBounds(
+      0,
+      0,
+      Math.min(this.scale.gameSize.width, 800),
+      this.scale.gameSize.height
+    );
 
     // Tambahkan keranjang
-    this.basket = this.physics.add.sprite(400, window.innerHeight, "basket");
+    // this.basket = this.physics.add.sprite(400, window.innerHeight, "basket");
+    this.basket = this.physics.add.sprite(
+      this.scale.width / 2,
+      this.scale.height - 50,
+      "basket"
+    );
+
     this.basket.setDisplaySize(100, 100); // width, height
     this.basket.setCollideWorldBounds(true); // Biar tidak keluar layar
     this.basket.setImmovable(true);
@@ -239,11 +266,19 @@ export default class PhaserGame extends Phaser.Scene {
       color: "#000000",
     });
 
-    this.timerText = this.add.text(600, 16, "Time: 60", {
-      fontStyle: "bold",
-      fontSize: "32px",
-      color: "#000000",
-    });
+    if (this.scale.gameSize.width < 800) {
+      this.timerText = this.add.text(16, 48, "Time: 60", {
+        fontStyle: "bold",
+        fontSize: "32px",
+        color: "#000000",
+      });
+    } else {
+      this.timerText = this.add.text(600, 16, "Time: 60", {
+        fontStyle: "bold",
+        fontSize: "32px",
+        color: "#000000",
+      });
+    }
 
     this.game.events.emit("ready");
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.shutdown, this);
@@ -353,7 +388,7 @@ export default class PhaserGame extends Phaser.Scene {
 
   createChain() {
     const chain = this.chains.create(
-      Phaser.Math.Between(100, 700),
+      Phaser.Math.Between(100, Math.min(700, this.scale.width)),
       0,
       "chain"
     ) as Phaser.Physics.Arcade.Sprite;
@@ -364,7 +399,7 @@ export default class PhaserGame extends Phaser.Scene {
 
   createCoin() {
     const coin = this.coins.create(
-      Phaser.Math.Between(100, 700),
+      Phaser.Math.Between(100, Math.min(700, this.scale.width)),
       0,
       "coin"
     ) as Phaser.Physics.Arcade.Sprite;
@@ -376,7 +411,7 @@ export default class PhaserGame extends Phaser.Scene {
 
   createBlueChain() {
     const blueChain = this.blueChains.create(
-      Phaser.Math.Between(100, 700),
+      Phaser.Math.Between(100, Math.min(700, this.scale.width)),
       0,
       "blue_chain"
     ) as Phaser.Physics.Arcade.Sprite;
@@ -387,7 +422,7 @@ export default class PhaserGame extends Phaser.Scene {
 
   createBug() {
     const bug = this.bugs.create(
-      Phaser.Math.Between(100, 700),
+      Phaser.Math.Between(100, Math.min(700, this.scale.width)),
       0,
       "bug"
     ) as Phaser.Physics.Arcade.Sprite;
@@ -398,7 +433,7 @@ export default class PhaserGame extends Phaser.Scene {
 
   createHacker() {
     const hacker = this.hackers.create(
-      Phaser.Math.Between(100, 700),
+      Phaser.Math.Between(100, Math.min(700, this.scale.width)),
       0,
       "hacker"
     ) as Phaser.Physics.Arcade.Sprite;
@@ -409,7 +444,7 @@ export default class PhaserGame extends Phaser.Scene {
 
   createVirus() {
     const virus = this.viruses.create(
-      Phaser.Math.Between(100, 700),
+      Phaser.Math.Between(100, Math.min(700, this.scale.width)),
       0,
       "virus"
     ) as Phaser.Physics.Arcade.Sprite;
@@ -642,16 +677,29 @@ export default class PhaserGame extends Phaser.Scene {
     this.hackers.clear(true, true);
     this.viruses.clear(true, true);
 
-    this.add.text(300, 250, "Game Over", {
-      fontStyle: "bold",
-      fontSize: "48px",
-      color: "#ff0000",
-    });
-    this.add.text(280, 320, `Final Score: ${this.score}`, {
-      fontStyle: "bold",
-      fontSize: "32px",
-      color: "#ff0000",
-    });
+    if (this.game.scale.gameSize.width < 800) {
+      this.add.text(100, 250, "Game Over", {
+        fontStyle: "bold",
+        fontSize: "48px",
+        color: "#ff0000",
+      });
+      this.add.text(100, 320, `Final Score: ${this.score}`, {
+        fontStyle: "bold",
+        fontSize: "32px",
+        color: "#ff0000",
+      });
+    } else {
+      this.add.text(300, 250, "Game Over", {
+        fontStyle: "bold",
+        fontSize: "48px",
+        color: "#ff0000",
+      });
+      this.add.text(300, 320, `Final Score: ${this.score}`, {
+        fontStyle: "bold",
+        fontSize: "32px",
+        color: "#ff0000",
+      });
+    }
 
     this.events.emit("gameover", { score: this.score });
   }

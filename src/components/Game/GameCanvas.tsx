@@ -7,21 +7,42 @@ interface GameCanvasProps {
   setGameOver: (gameOver: boolean) => void;
 }
 
+const configPcCanvas: Phaser.Types.Core.GameConfig = {
+  type: Phaser.AUTO,
+  width: 800,
+  height: window.innerHeight,
+  parent: "game-container",
+  scene: [PhaserGame],
+  physics: {
+    default: "arcade",
+    arcade: {
+      // debug: true,
+    },
+  },
+};
+
+const configMobileCanvas: Phaser.Types.Core.GameConfig = {
+  type: Phaser.AUTO,
+  parent: "game-container",
+  scene: [PhaserGame],
+  physics: {
+    default: "arcade",
+    arcade: {
+      // debug: true,
+    },
+  },
+  scale: {
+    mode: Phaser.Scale.FIT,
+    autoCenter: Phaser.Scale.CENTER_BOTH,
+    width: Math.min(window.innerWidth, 800),
+    height: window.innerHeight,
+  },
+};
+
 export default function GameCanvas({ setGameOver }: GameCanvasProps) {
   useEffect(() => {
-    const config: Phaser.Types.Core.GameConfig = {
-      type: Phaser.AUTO,
-      width: Math.max(window.innerWidth, 800),
-      height: window.innerHeight,
-      parent: "game-container",
-      scene: [PhaserGame],
-      physics: {
-        default: "arcade",
-        arcade: {
-          debug: true, // sementara true agar kita bisa lihat bounding box
-        },
-      },
-    };
+    const isMobile = window.innerWidth < 800;
+    const config = isMobile ? configMobileCanvas : configPcCanvas;
 
     const game = new Phaser.Game(config);
     game.events.once("ready", () => {
@@ -49,7 +70,7 @@ export default function GameCanvas({ setGameOver }: GameCanvasProps) {
         id="game-container"
         className="flex items-center justify-center
         w-full h-full"
-        style={{ maxWidth: "800px", maxHeight: "100vh" }}
+        style={{ maxWidth: "100vw", maxHeight: "100vh" }}
       />
     </div>
   );
