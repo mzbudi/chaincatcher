@@ -1,6 +1,8 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { useLineraStore } from "../../store/useLineraStore";
+import { initializeLinera } from "../../api/linera";
 
 interface MenuProps {
   onStart: () => void;
@@ -8,23 +10,74 @@ interface MenuProps {
 
 const Menu: React.FC<MenuProps> = ({ onStart }) => {
   const [showModal, setShowModal] = useState(false);
+  const initialized = useLineraStore((state) => state.initialized);
+  const chain = useLineraStore((state) => state.chain);
+
+  const initialize = async () => {
+    if (initialized) {
+      return;
+    }
+
+    await initializeLinera();
+  };
+  useEffect(() => {
+    initialize();
+  }, []);
+
   return (
     <div className="text-center">
       <h1 className="text-4xl font-bold mb-8">Chain Catcher</h1>
-      <div className="space-x-4">
+      {chain && initialized ? (
+        <>
+          <div className="space-x-4">
+            <button
+              className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-xl text-lg font-semibold"
+              onClick={onStart}
+            >
+              Play
+            </button>
+            <button
+              className="bg-gray-400 text-white px-6 py-2 rounded-xl text-lg font-semibold"
+              onClick={() => setShowModal(true)}
+            >
+              How to play
+            </button>
+          </div>
+          <p className="mt-4 text-gray-600 p-6 bg-amber-600 rounded-xl">
+            Chain ID: <strong>{chain}</strong>
+          </p>
+        </>
+      ) : (
         <button
-          className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-xl text-lg font-semibold"
-          onClick={onStart}
+          className={`bg-gray-400 text-white px-6 py-2 rounded-xl text-lg font-semibold ${
+            initialized ? "hidden" : ""
+          }`}
+          disabled
         >
-          Play
+          <span className="flex items-center">
+            <svg
+              className="animate-spin h-5 w-5 mr-3 text-white"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                fill="none"
+                strokeWidth="4"
+              />
+              <path
+                className="opacity-75"
+                fill="none"
+                d="M4 12a8 8 0 1 1 16 0A8 8 0 1 1 4 12z"
+              />
+            </svg>
+            Requesting Chain ID...
+          </span>
         </button>
-        <button
-          className="bg-gray-400 text-white px-6 py-2 rounded-xl text-lg font-semibold"
-          onClick={() => setShowModal(true)}
-        >
-          How to play
-        </button>
-      </div>
+      )}
       <AnimatePresence>
         {showModal && (
           <>
@@ -57,8 +110,8 @@ const Menu: React.FC<MenuProps> = ({ onStart }) => {
                 </li>
                 <li>
                   🪙 <strong>Coins</strong> give 5 points,{" "}
-                  <strong>chains</strong> give 10, <strong>blocks</strong> give
-                  3.
+                  <strong>chains</strong> give 10, <strong>blue chains</strong>{" "}
+                  give 3.
                 </li>
                 <li>
                   ❌ Avoid <strong>bugs, hackers, and viruses</strong> — they
