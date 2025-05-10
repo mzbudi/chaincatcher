@@ -36,6 +36,11 @@ export const initializeLinera = async () => {
     const gClient = new ApolloClient({
       uri: `http://localhost:8080/chains/8d031eb15ecc647fc5b4a471fb1cf312ae6686e697603295c71b2a978913a8bf/applications/25195a1ec782630a51358c33183ea05d5b8bd927e8ce09274d352d2b7bfdcbbc`,
       cache: new InMemoryCache(),
+      defaultOptions: {
+        watchQuery: {
+          fetchPolicy: "no-cache",
+        },
+      },
     });
 
     useLineraStore.getState().setLinera({
@@ -74,7 +79,6 @@ export const getValueGraphQL = async () => {
 };
 
 export const getScoreGraphQL = async (name: string) => {
-  name = name || "mzbudi"; // Set default name if not provided
   const { gClient } = useLineraStore.getState();
   if (!gClient) {
     console.error("GraphQL client not initialized");
@@ -121,7 +125,6 @@ export const setScoreGraphQL = async (name: string, score: number) => {
     console.error("Error setting score:", error);
   }
 };
-
 
 // using linera client but keep getting ERROR blob_last_used_by{blob_id=BlobId or such, changing to graphql
 

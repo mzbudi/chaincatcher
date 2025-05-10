@@ -1,16 +1,11 @@
 import { useState } from "react";
 import Menu from "./Menu";
 import GameCanvas from "../Game/GameCanvas";
-// import { playBackgroundMusic } from "../Bgm/audio"; // Import fungsi untuk memutar musik latar
 
 export default function MainMenu() {
   const [started, setStarted] = useState(false);
   const [gameOver, setGameOver] = useState(false);
   const [gameKey, setGameKey] = useState(0);
-
-  //   useEffect(() => {
-  //     playBackgroundMusic();
-  //   }, []);
 
   const handleStart = () => {
     // playBackgroundMusic();
@@ -30,7 +25,9 @@ export default function MainMenu() {
   return (
     <div className="App min-h-screen bg-orange-200 flex flex-col items-center justify-center">
       {!started && !gameOver ? (
-        <Menu onStart={handleStart} />
+        <>
+          <Menu onStart={handleStart} />
+        </>
       ) : (
         <>
           <GameCanvas key={gameKey} setGameOver={setGameOver} />

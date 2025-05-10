@@ -43,6 +43,7 @@ const configMobileCanvas: Phaser.Types.Core.GameConfig = {
 
 export default function GameCanvas({ setGameOver }: GameCanvasProps) {
   const nickname = useGameStore((state) => state.nickname);
+  
 
   useEffect(() => {
     const isMobile = window.innerWidth < 800;
@@ -57,7 +58,8 @@ export default function GameCanvas({ setGameOver }: GameCanvasProps) {
 
         await setScoreGraphQL(nickname, score);
         console.log("Score submitted successfully");
-
+        
+        useGameStore.getState().setGameScore(score);
         setGameOver(true);
       });
     });
