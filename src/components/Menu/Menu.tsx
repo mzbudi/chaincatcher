@@ -2,7 +2,11 @@ import React from "react";
 import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useLineraStore } from "../../store/useLineraStore";
-import { getScoreGraphQL, initializeLinera } from "../../api/linera";
+import {
+  getScoreGraphQL,
+  initializeLinera,
+  submitScore,
+} from "../../api/linera";
 import { useGameStore } from "../../store/useGameStore";
 
 interface MenuProps {
@@ -110,6 +114,12 @@ const Menu: React.FC<MenuProps> = ({ onStart }) => {
                 onClick={() => setShowModal(true)}
               >
                 How to play
+              </button>
+              <button
+                className="bg-gray-400 text-white px-6 py-2 rounded-xl text-lg font-semibold"
+                onClick={() => submitScore(1)}
+              >
+                test hit
               </button>
             </div>
             <p className="mt-4 text-gray-600 p-6 bg-amber-600 rounded-xl">

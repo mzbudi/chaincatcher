@@ -4,27 +4,27 @@ import { ApolloClient, InMemoryCache } from "@apollo/client";
 import { gql } from "@apollo/client";
 
 const appId =
-  "25195a1ec782630a51358c33183ea05d5b8bd927e8ce09274d352d2b7bfdcbbc";
+  "24afe51575e6bd6add94f3dd45a2d6eaded5fbc29f538404af6dc3273219a3b6";
 
 export const initializeLinera = async () => {
   try {
     await linera.default();
 
-    // const faucet = new linera.Faucet(
-    //   "https://faucet.testnet-babbage.linera.net"
-    // );
-    // const wallet = await faucet.createWallet();
-    // const client = await new linera.Client(wallet);
-    // const chain = await faucet.claimChain(client);
-
-    // await linera.default();
-
-    const faucet = await new linera.Faucet("http://localhost:3000");
+    const faucet = new linera.Faucet(
+      "https://faucet.testnet-babbage.linera.net"
+    );
     const wallet = await faucet.createWallet();
     const client = await new linera.Client(wallet);
     const chain = await faucet.claimChain(client);
 
-    await client.frontend().application(appId);
+    // await linera.default();
+
+    // const faucet = await new linera.Faucet("http://localhost:3000");
+    // const wallet = await faucet.createWallet();
+    // const client = await new linera.Client(wallet);
+    // const chain = await faucet.claimChain(client);
+
+    // await client.frontend().application(appId);
 
     console.log("Linera initialized successfully");
     console.log("Faucet:", faucet);
@@ -33,8 +33,19 @@ export const initializeLinera = async () => {
     console.log("Chain:", chain);
     // console.log("Counter:", counter);
 
+    const backend = await client.frontend().application(appId);
+
+    const response = await backend.query(
+      JSON.stringify({
+        query: `query { value }`,
+      })
+    );
+
+    console.log(response);
+    
+
     const gClient = new ApolloClient({
-      uri: `http://localhost:8080/chains/8d031eb15ecc647fc5b4a471fb1cf312ae6686e697603295c71b2a978913a8bf/applications/25195a1ec782630a51358c33183ea05d5b8bd927e8ce09274d352d2b7bfdcbbc`,
+      uri: `http://localhost:8080/chains/0b41858cc4b27876eef3f676d99f9e9b2e64ac428ee1cebd78c90c5beb7b73cc/applications/24afe51575e6bd6add94f3dd45a2d6eaded5fbc29f538404af6dc3273219a3b6`,
       cache: new InMemoryCache(),
       defaultOptions: {
         watchQuery: {
@@ -128,30 +139,30 @@ export const setScoreGraphQL = async (name: string, score: number) => {
 
 // using linera client but keep getting ERROR blob_last_used_by{blob_id=BlobId or such, changing to graphql
 
-// export const submitScore = async (score: number) => {
-//   const { client, chain } = useLineraStore.getState();
-//   if (!client || !chain) {
-//     console.error("Client or chain not initialized");
-//     return;
-//   }
-// console.log("Submitting score:", score);
-// console.log("Client:", client);
+export const submitScore = async (score: number) => {
+  const { client, chain } = useLineraStore.getState();
+  if (!client || !chain) {
+    console.error("Client or chain not initialized");
+    return;
+  }
+  console.log("Submitting score:", score);
+  console.log("Client:", client);
 
-// try {
-//   const backend = await client.frontend().application(appId);
+  try {
+    const backend = await client.frontend().application(appId);
 
-//   const response = await backend.query(
-//     JSON.stringify({
-//       query: `query { value }`,
-//     })
-//   );
+    const response = await backend.query(
+      JSON.stringify({
+        query: `query { value }`,
+      })
+    );
 
-//     console.log("Score submitted successfully:", response);
-//     // return response;
-//   } catch (error) {
-//     console.error("Error submitting score:", error);
-//   }
-// };
+    console.log("Score submitted successfully:", response);
+    // return response;
+  } catch (error) {
+    console.error("Error submitting score:", error);
+  }
+};
 
 // export const getScores = async () => {
 //   const { client, chain } = useLineraStore.getState();
