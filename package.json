@@ -10,9 +10,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@apollo/client": "^3.13.8",
     "@linera/client": "^0.14.0",
     "@tailwindcss/vite": "^4.1.5",
     "framer-motion": "^12.9.4",
+    "graphql": "^16.11.0",
     "middleware": "^1.0.0",
     "phaser": "^3.88.2",
     "react": "^19.0.0",

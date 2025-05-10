@@ -1,7 +1,9 @@
 // src/components/Game/GameCanvas.tsx
 import { useEffect } from "react";
 import Phaser from "phaser";
-import PhaserGame from "./PhaserGame"; // class Scene kamu
+import PhaserGame from "./PhaserGame";
+import { setScoreGraphQL } from "../../api/linera"; // Import store Linera
+import { useGameStore } from "../../store/useGameStore";
 
 interface GameCanvasProps {
   setGameOver: (gameOver: boolean) => void;
@@ -40,15 +42,22 @@ const configMobileCanvas: Phaser.Types.Core.GameConfig = {
 };
 
 export default function GameCanvas({ setGameOver }: GameCanvasProps) {
+  const nickname = useGameStore((state) => state.nickname);
+
   useEffect(() => {
     const isMobile = window.innerWidth < 800;
     const config = isMobile ? configMobileCanvas : configPcCanvas;
 
     const game = new Phaser.Game(config);
     game.events.once("ready", () => {
-      const scene = game.scene.getScene("chain-catcher"); // scene key kamu
-      scene.events.on("gameover", () => {
-        console.log("Game Over");
+      const scene = game.scene.getScene("chain-catcher"); 
+      scene.events.on("gameover", async (payload: { score: number }) => {
+        const { score } = payload;
+        console.log("Game Over, Score: ", score);
+
+        await setScoreGraphQL(nickname, score);
+        console.log("Score submitted successfully");
+
         setGameOver(true);
       });
     });
@@ -62,7 +71,7 @@ export default function GameCanvas({ setGameOver }: GameCanvasProps) {
       window.removeEventListener("resize", handleResize);
       game.destroy(true);
     };
-  }, [setGameOver]);
+  }, [setGameOver, nickname]);
 
   return (
     <div className="flex items-center justify-center min-h-screen">

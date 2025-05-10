@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useLineraStore } from "../../store/useLineraStore";
 import { initializeLinera } from "../../api/linera";
+import { useGameStore } from "../../store/useGameStore";
 
 interface MenuProps {
   onStart: () => void;
@@ -10,8 +11,11 @@ interface MenuProps {
 
 const Menu: React.FC<MenuProps> = ({ onStart }) => {
   const [showModal, setShowModal] = useState(false);
+  const [showInputNickname, setShowInputNickname] = useState(false);
   const initialized = useLineraStore((state) => state.initialized);
   const chain = useLineraStore((state) => state.chain);
+  const nickname = useGameStore((state) => state.nickname);
+  const [nicknameInput, setNicknameInput] = useState("");
 
   const initialize = async () => {
     if (initialized) {
@@ -24,6 +28,43 @@ const Menu: React.FC<MenuProps> = ({ onStart }) => {
     initialize();
   }, []);
 
+  // useEffect(() => {
+  //   const fetchScores = async () => {
+  //     const scores = await getScores();
+  //     console.log("Scores:", scores);
+  //   };
+
+  //   if (initialized) {
+  //     fetchScores();
+  //   }
+  // }, []);
+
+  const checkIfNicknameExists = () => {
+    if (!nickname || nickname === "") {
+      setShowInputNickname(true);
+      return false;
+    }
+    return true;
+  };
+
+  const submitNickname = () => {
+    const nickname = nicknameInput
+    if (nickname && nickname !== "") {
+      useGameStore.setState({ nickname });
+      setShowInputNickname(false);
+      onStart();
+    } else {
+      alert("Please enter a nickname");
+    }
+  };
+
+  const validateStart = () => {
+    const nicknameExists = checkIfNicknameExists();
+    if (nicknameExists) {
+      onStart();
+    }
+  };
+
   return (
     <div className="text-center">
       <h1 className="text-4xl font-bold mb-8">Chain Catcher</h1>
@@ -32,13 +73,14 @@ const Menu: React.FC<MenuProps> = ({ onStart }) => {
           <div className="space-x-4">
             <button
               className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-xl text-lg font-semibold"
-              onClick={onStart}
+              onClick={validateStart}
             >
               Play
             </button>
             <button
               className="bg-gray-400 text-white px-6 py-2 rounded-xl text-lg font-semibold"
               onClick={() => setShowModal(true)}
+              // onClick={testSetScoreGraphQL}
             >
               How to play
             </button>
@@ -128,6 +170,50 @@ const Menu: React.FC<MenuProps> = ({ onStart }) => {
                   className="bg-blue-500 text-white px-5 py-2 rounded-full hover:bg-blue-600 transition"
                 >
                   Got it!
+                </button>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {showInputNickname && (
+          <>
+            <motion.div
+              className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-40"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowInputNickname(false)}
+            />
+            <motion.div
+              className="fixed bg-white rounded-2xl shadow-2xl px-8 py-6 max-w-md w-[90%] z-50 text-left"
+              initial={{ opacity: 0, scale: 0.9, y: "-50%", x: "-50%" }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.3 }}
+              style={{ top: "50%", left: "50%", position: "fixed" }}
+            >
+              <h2 className="text-2xl font-bold text-center mb-4">
+                Enter Your Nickname
+              </h2>
+              <input
+                type="text"
+                placeholder="Nickname"
+                className="border border-gray-300 rounded-lg p-2 w-full mb-4"
+                onChange={(e) => {
+                  setNicknameInput(e.target.value);
+                }}
+                required
+              />
+              <div className="text-center mt-6">
+                <button
+                  onClick={() => {
+                    submitNickname();
+                  }}
+                  className="bg-blue-500 text-white px-5 py-2 rounded-full hover:bg-blue-600 transition"
+                >
+                  Submit
                 </button>
               </div>
             </motion.div>
