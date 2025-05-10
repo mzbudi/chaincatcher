@@ -1,25 +1,26 @@
 import { useState } from "react";
 import Menu from "./Menu";
 import GameCanvas from "../Game/GameCanvas";
+import { useGameStore } from "../../store/useGameStore";
 
 export default function MainMenu() {
   const [started, setStarted] = useState(false);
-  const [gameOver, setGameOver] = useState(false);
   const [gameKey, setGameKey] = useState(0);
+  const gameOver = useGameStore((state) => state.gameOver);
 
   const handleStart = () => {
     // playBackgroundMusic();
     setStarted(true);
-    setGameOver(false); // Reset game over state jika mulai permainan baru
+    useGameStore.getState().setGameOver(false);
   };
 
   const handleBackToMenu = () => {
     setStarted(false);
-    setGameOver(false); // Reset game over state jika kembali ke menu
+    useGameStore.getState().setGameOver(false);
   };
 
   const handlePlayAgain = () => {
-    setGameOver(false);
+    useGameStore.getState().setGameOver(false);
     setGameKey((prevKey) => prevKey + 1); // Update game key untuk memicu rerender
   };
   return (
@@ -30,7 +31,7 @@ export default function MainMenu() {
         </>
       ) : (
         <>
-          <GameCanvas key={gameKey} setGameOver={setGameOver} />
+          <GameCanvas key={gameKey} />
 
           {gameOver && (
             <div className="absolute top-3/4 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center space-x-4">
