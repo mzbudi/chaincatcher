@@ -6,9 +6,22 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
+    port: 3000,
     headers: {
-      "Cross-Origin-Embedder-Policy": "require-corp",
       "Cross-Origin-Opener-Policy": "same-origin",
+      "Cross-Origin-Embedder-Policy": "require-corp",
+    },
+    proxy: {
+      "/rpc.v1": {
+        target: "https://linera-testnet.chainbase.online",
+        changeOrigin: true,
+        secure: true,
+      },
+      "/faucet.v1": {
+        target: "https://faucet.testnet-babbage.linera.net",
+        changeOrigin: true,
+        secure: true,
+      },
     },
   },
   build: {
