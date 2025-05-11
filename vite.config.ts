@@ -15,14 +15,12 @@ export default defineConfig({
     rollupOptions: {
       input: {
         index: "index.html",
-        linera: "@linera/client", // Tambahkan @linera/client sebagai entri terpisah
+        linera: "@linera/client",
       },
-      preserveEntrySignatures: "strict", // Menjaga signature entri tetap utuh
+      preserveEntrySignatures: "strict",
     },
   },
   optimizeDeps: {
-    exclude: [
-      "@linera/client", // Mengecualikan @linera/client dari optimisasi dependensi
-    ],
+    exclude: ["@linera/client"],
   },
 });

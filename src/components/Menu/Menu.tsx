@@ -3,9 +3,9 @@ import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useLineraStore } from "../../store/useLineraStore";
 import {
-  getScoreGraphQL,
+  getScoreWebClient,
   initializeLinera,
-  submitScore,
+  getValueWebClient,
 } from "../../api/linera";
 import { useGameStore } from "../../store/useGameStore";
 
@@ -38,7 +38,7 @@ const Menu: React.FC<MenuProps> = ({ onStart }) => {
 
   useEffect(() => {
     const fetchScores = async () => {
-      const scores = await getScoreGraphQL(nickname);
+      const scores = await getScoreWebClient(nickname);
       if (scores) {
         useGameStore.getState().setHighScore(scores);
       } else {
@@ -117,7 +117,8 @@ const Menu: React.FC<MenuProps> = ({ onStart }) => {
               </button>
               <button
                 className="bg-gray-400 text-white px-6 py-2 rounded-xl text-lg font-semibold"
-                onClick={() => submitScore(1)}
+                // onClick={() => submitScore(1)}
+                onClick={() => getValueWebClient()}
               >
                 test hit
               </button>

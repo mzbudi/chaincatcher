@@ -2,7 +2,7 @@
 import { useEffect } from "react";
 import Phaser from "phaser";
 import PhaserGame from "./PhaserGame";
-import { setScoreGraphQL } from "../../api/linera"; // Import store Linera
+import { setScoreWebClient } from "../../api/linera"; // Import store Linera
 import { useGameStore } from "../../store/useGameStore";
 
 const configPcCanvas: Phaser.Types.Core.GameConfig = {
@@ -51,7 +51,10 @@ export default function GameCanvas() {
         const { score } = payload;
         console.log("Game Over, Score: ", score);
 
-        await setScoreGraphQL(nickname, score);
+        // await setScoreGraphQL(nickname, score);
+        // console.log("Score submitted successfully");
+
+        await setScoreWebClient(nickname, score);
         console.log("Score submitted successfully");
 
         useGameStore.getState().setGameScore(score);
