@@ -1,11 +1,13 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import tailwindcss from "@tailwindcss/vite";
+import wasm from "vite-plugin-wasm";
+import topLevelAwait from "vite-plugin-top-level-await";
 
 export default defineConfig({
   base: "./",
-  plugins: [react()],
+  plugins: [react(), tailwindcss(), wasm(), topLevelAwait()],
   build: {
-    outDir: "dist",
     rollupOptions: {
       input: {
         index: "index.html",
@@ -17,6 +19,7 @@ export default defineConfig({
   optimizeDeps: {
     exclude: ["@linera/client"],
   },
+  assetsInclude: ["**/*.wasm"],
   server: {
     port: 3000,
     headers: {
