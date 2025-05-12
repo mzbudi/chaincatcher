@@ -6,14 +6,14 @@ import { useLineraStore } from "../store/useLineraStore";
 /**
  * Hosted Counter AppId
  */
-// const appId =
-//   "2b1a0df8868206a4b7d6c2fdda911e4355d6c0115b896d4947ef8e535ee3c6b8";
+const appId =
+  "2b1a0df8868206a4b7d6c2fdda911e4355d6c0115b896d4947ef8e535ee3c6b8";
 
 /**
  * My deployed App Id
  */
-const appId =
-  "24afe51575e6bd6add94f3dd45a2d6eaded5fbc29f538404af6dc3273219a3b6";
+// const appId =
+//   "24afe51575e6bd6add94f3dd45a2d6eaded5fbc29f538404af6dc3273219a3b6";
 
 export const initializeLinera = async () => {
   try {
