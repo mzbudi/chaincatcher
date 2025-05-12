@@ -1,10 +1,22 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import tailwindcss from "@tailwindcss/vite";
 
-// https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
+  base: "./",
+  plugins: [react()],
+  build: {
+    outDir: "build",
+    rollupOptions: {
+      input: {
+        index: "index.html",
+        linera: "@linera/client",
+      },
+      preserveEntrySignatures: "strict",
+    },
+  },
+  optimizeDeps: {
+    exclude: ["@linera/client"],
+  },
   server: {
     port: 3000,
     headers: {
@@ -23,17 +35,5 @@ export default defineConfig({
         secure: true,
       },
     },
-  },
-  build: {
-    rollupOptions: {
-      input: {
-        index: "index.html",
-        linera: "@linera/client",
-      },
-      preserveEntrySignatures: "strict",
-    },
-  },
-  optimizeDeps: {
-    exclude: ["@linera/client"],
   },
 });
