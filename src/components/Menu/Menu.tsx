@@ -1,13 +1,9 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { useLineraStore } from "../../store/useLineraStore";
-import {
-  getScoreWebClient,
-  initializeLinera,
-  getValueWebClient,
-} from "../../api/linera";
+// import { useLineraStore } from "../../store/useLineraStore";
 import { useGameStore } from "../../store/useGameStore";
+import { useLinera } from "../../Provider/LineraWebClientProvider";
 
 interface MenuProps {
   onStart: () => void;
@@ -16,27 +12,43 @@ interface MenuProps {
 const Menu: React.FC<MenuProps> = ({ onStart }) => {
   const [showModal, setShowModal] = useState(false);
   const [showInputNickname, setShowInputNickname] = useState(false);
-  const initialized = useLineraStore((state) => state.initialized);
-  const chain = useLineraStore((state) => state.chain);
+  // const initialized = useLineraStore((state) => state.initialized);
+  // const chain = useLineraStore((state) => state.chain);
   const nickname = useGameStore((state) => state.nickname);
   const gameScore = useGameStore((state) => state.gameScore);
   const highScore = useGameStore((state) => state.highScore);
   const [nicknameInput, setNicknameInput] = useState("");
   // const [nicknameSubmitted, setNicknameSubmitted] = useState(false);
 
-  const initialize = async () => {
-    if (initialized) {
-      return;
-    }
-
-    await initializeLinera();
-  };
-  useEffect(() => {
-    initialize();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const { client, application, chain, status } = useLinera();
 
   useEffect(() => {
+    const getScoreWebClient = async (nickname: string) => {
+      if (application && client) {
+        try {
+          const response = await application.query(
+            JSON.stringify({
+              query: `
+        query QueryRoot($name: String!) {
+          score(name: $name)
+        }
+      `,
+              variables: {
+                name: nickname,
+              },
+            })
+          );
+
+          console.log("Scores retrieved successfully:", response);
+          const result = JSON.parse(response);
+          console.log(result.data.score);
+          return result.data.score;
+        } catch (error) {
+          console.error("Error retrieving scores:", error);
+        }
+      }
+    };
+
     const fetchScores = async () => {
       const scores = await getScoreWebClient(nickname);
       if (scores) {
@@ -46,10 +58,10 @@ const Menu: React.FC<MenuProps> = ({ onStart }) => {
       }
     };
 
-    if (initialized && (nickname || gameScore)) {
+    if (nickname || gameScore) {
       fetchScores();
     }
-  }, [initialized, nickname, gameScore]);
+  }, [nickname, gameScore, application, client]);
 
   const checkIfNicknameExists = () => {
     if (!nickname || nickname === "") {
@@ -78,6 +90,22 @@ const Menu: React.FC<MenuProps> = ({ onStart }) => {
     }
   };
 
+  const getValueWebClient = async () => {
+    console.log("hit");
+    
+    if (application && client) {
+      try {
+        const response = await application.query(
+          '{ "query": "query { value }" }'
+        );
+
+        console.log("Value :", response);
+      } catch (error) {
+        console.error("Error retrieving scores:", error);
+      }
+    }
+  };
+
   return (
     <>
       {nickname && (
@@ -100,7 +128,7 @@ const Menu: React.FC<MenuProps> = ({ onStart }) => {
         <h1 className="text-4xl font-bold mb-4">Chain Catcher</h1>
         <p className="text-lg mb-4">Catch the falling chains!</p>
 
-        {chain && initialized ? (
+        {chain !== null && status === "Ready" ? (
           <>
             <div className="space-x-4">
               <button
@@ -115,10 +143,10 @@ const Menu: React.FC<MenuProps> = ({ onStart }) => {
               >
                 How to play
               </button>
+
               <button
-                className="bg-gray-400 text-white px-6 py-2 rounded-xl text-lg font-semibold"
-                // onClick={() => submitScore(1)}
-                onClick={() => getValueWebClient()}
+                className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-xl text-lg font-semibold"
+                onClick={getValueWebClient}
               >
                 test hit
               </button>
@@ -130,7 +158,7 @@ const Menu: React.FC<MenuProps> = ({ onStart }) => {
         ) : (
           <button
             className={`bg-gray-400 text-white px-6 py-2 rounded-xl text-lg font-semibold ${
-              initialized ? "hidden" : ""
+              status === "Ready" ? "hidden" : ""
             }`}
             disabled
           >

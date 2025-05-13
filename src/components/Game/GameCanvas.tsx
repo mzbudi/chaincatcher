@@ -2,8 +2,10 @@
 import { useEffect } from "react";
 import Phaser from "phaser";
 import PhaserGame from "./PhaserGame";
-import { setScoreWebClient } from "../../api/linera"; // Import store Linera
+// import { setScoreWebClient } from "../../api/linera";
+
 import { useGameStore } from "../../store/useGameStore";
+import { useLinera } from "../../Provider/LineraWebClientProvider";
 
 const configPcCanvas: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
@@ -39,12 +41,46 @@ const configMobileCanvas: Phaser.Types.Core.GameConfig = {
 
 export default function GameCanvas() {
   const nickname = useGameStore((state) => state.nickname);
+  const { client, application } = useLinera();
 
   useEffect(() => {
     const isMobile = window.innerWidth < 800;
     const config = isMobile ? configMobileCanvas : configPcCanvas;
 
+    const setScoreWebClient = async (name: string, score: number) => {
+      if (application && client) {
+        console.log("Submitting score:", score);
+        console.log("Client:", client);
+
+        try {
+          const response = await application.query(
+            JSON.stringify({
+              query: `
+        mutation SetScore($name: String!, $score: Int!) {
+          setScore(name: $name, score: $score)
+        }
+      `,
+              variables: {
+                name: name,
+                score: score,
+              },
+            })
+          );
+
+          // Jika kamu ingin mengambil hasilnya:
+          const result = JSON.parse(response);
+          console.log(result.data.setScore);
+
+          console.log("Score submitted successfully:", response);
+          return result;
+        } catch (error) {
+          console.error("Error submitting score:", error);
+        }
+      }
+    };
+
     const game = new Phaser.Game(config);
+
     game.events.once("ready", () => {
       const scene = game.scene.getScene("chain-catcher");
       scene.events.on("gameover", async (payload: { score: number }) => {
@@ -54,8 +90,8 @@ export default function GameCanvas() {
         // await setScoreGraphQL(nickname, score);
         // console.log("Score submitted successfully");
 
-        await setScoreWebClient(nickname, score);
-        console.log("Score submitted successfully");
+        const response = await setScoreWebClient(nickname, score);
+        console.log("Score submitted successfully", response);
 
         useGameStore.getState().setGameScore(score);
         useGameStore.getState().setGameOver(true);
@@ -71,7 +107,7 @@ export default function GameCanvas() {
       window.removeEventListener("resize", handleResize);
       game.destroy(true);
     };
-  }, [nickname]);
+  }, [nickname, application, client]);
 
   return (
     <div className="flex items-center justify-center min-h-screen">
