@@ -90,33 +90,33 @@ const Menu: React.FC<MenuProps> = ({ onStart }) => {
     }
   };
 
-  const getValueWebClient = async () => {
-    console.log("hit");
-    
-    if (application && client) {
-      try {
-        const response = await application.query(
-          '{ "query": "query { value }" }'
-        );
+  // const getValueWebClient = async () => {
+  //   console.log("hit");
 
-        console.log("Value :", response);
-      } catch (error) {
-        console.error("Error retrieving scores:", error);
-      }
-    }
-  };
+  //   if (application && client) {
+  //     try {
+  //       const response = await application.query(
+  //         '{ "query": "query { value }" }'
+  //       );
+
+  //       console.log("Value :", response);
+  //     } catch (error) {
+  //       console.error("Error retrieving scores:", error);
+  //     }
+  //   }
+  // };
 
   return (
     <>
       {nickname && (
-        <div className="absolute top-4 left-4 text-2xl font-bold">
+        <div className="absolute top-4 left-4 text-2xl font-bold bg-amber-400 rounded-xl p-1.5">
           Welcome, {nickname}
         </div>
       )}
       {(() => {
         if (highScore > 0) {
           return (
-            <div className="absolute top-12 left-4 text-2xl font-bold">
+            <div className="absolute top-12 left-4 text-2xl font-bold bg-amber-400 rounded-xl p-1.5">
               Highest Score: {highScore}
             </div>
           );
@@ -124,66 +124,66 @@ const Menu: React.FC<MenuProps> = ({ onStart }) => {
         return null;
       })()}
 
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Chain Catcher</h1>
-        <p className="text-lg mb-4">Catch the falling chains!</p>
+      <div className="text-center bg-white/70 backdrop-blur-sm rounded-xl p-6 max-w-xl mx-auto mt-10 shadow-lg">
+        <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-orange-500 via-red-500 to-yellow-500 text-transparent bg-clip-text drop-shadow-md">
+          Chain Catcher
+        </h1>
+
+        <p className="text-lg mb-4 text-gray-700 drop-shadow-sm">
+          Catch the falling chains!
+        </p>
 
         {chain !== null && status === "Ready" ? (
           <>
             <div className="space-x-4">
               <button
-                className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-xl text-lg font-semibold"
+                className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-xl text-lg font-semibold cursor-pointer"
                 onClick={validateStart}
               >
                 Play
               </button>
               <button
-                className="bg-gray-400 text-white px-6 py-2 rounded-xl text-lg font-semibold"
+                className="bg-blue-400 text-white px-6 py-2 rounded-xl text-lg font-semibold hover:bg-blue-600 cursor-pointer"
                 onClick={() => setShowModal(true)}
               >
                 How to play
               </button>
 
-              <button
+              {/* <button
                 className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-xl text-lg font-semibold"
                 onClick={getValueWebClient}
               >
                 test hit
-              </button>
+              </button> */}
             </div>
-            <p className="mt-4 text-gray-600 p-6 bg-amber-600 rounded-xl">
+            <p className="mt-4 text-gray-900 p-4 bg-amber-400 rounded-xl max-w-md mx-auto text-center font-semibold break-words whitespace-normal">
               Chain ID: <strong>{chain}</strong>
             </p>
           </>
         ) : (
           <button
-            className={`bg-gray-400 text-white px-6 py-2 rounded-xl text-lg font-semibold ${
-              status === "Ready" ? "hidden" : ""
-            }`}
+            className="flex items-center gap-2 px-5 py-2 rounded-xl text-white font-semibold text-base transition-all duration-300 bg-red-600 cursor-not-allowed opacity-80"
             disabled
+            aria-busy="true"
+            role="status"
           >
-            <span className="flex items-center">
-              <svg
-                className="animate-spin h-5 w-5 mr-3 text-white"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  fill="none"
-                  strokeWidth="4"
-                />
-                <path
-                  className="opacity-75"
-                  fill="none"
-                  d="M4 12a8 8 0 1 1 16 0A8 8 0 1 1 4 12z"
-                />
-              </svg>
-              Requesting Chain ID...
-            </span>
+            <svg
+              aria-hidden="true"
+              className="inline w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-yellow-400"
+              viewBox="0 0 100 101"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                fill="currentColor"
+              />
+              <path
+                d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                fill="currentFill"
+              />
+            </svg>
+            <span>Requesting Chain ID...</span>
           </button>
         )}
         <AnimatePresence>

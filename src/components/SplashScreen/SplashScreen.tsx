@@ -7,26 +7,16 @@ export default function SplashScreen({ onStart }: { onStart: () => void }) {
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        height: "100vh",
-        backgroundColor: "#222",
-        color: "white",
-      }}
-    >
-      <h1>Welcome to Chain Catcher</h1>
+    <div className="flex flex-col items-center justify-center h-screen bg-orange-300 text-white text-center p-6">
+      <h1 className="text-5xl font-extrabold drop-shadow-md mb-6">
+        ⛓️ Chain Catcher
+      </h1>
+      <p className="text-lg mb-8 max-w-md text-orange-100">
+        Help Microbot collect chains and coins while avoiding bugs and hackers in the lab!
+      </p>
       <button
-        style={{
-          padding: "1rem 2rem",
-          fontSize: "1.2rem",
-          marginTop: "20px",
-          cursor: "pointer",
-        }}
         onClick={handleStart}
+        className="bg-white text-orange-300 font-semibold px-8 py-3 rounded-full shadow-md hover:bg-orange-100 hover:scale-105 transition transform duration-300"
       >
         Start Game
       </button>

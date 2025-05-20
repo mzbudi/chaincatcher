@@ -24,7 +24,7 @@ export default function MainMenu() {
     setGameKey((prevKey) => prevKey + 1); // Update game key untuk memicu rerender
   };
   return (
-    <div className="App min-h-screen bg-orange-200 flex flex-col items-center justify-center">
+    <div className="App min-h-screen flex flex-col items-center justify-center">
       {!started && !gameOver ? (
         <>
           <Menu onStart={handleStart} />
