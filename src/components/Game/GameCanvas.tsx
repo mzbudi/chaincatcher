@@ -86,12 +86,11 @@ export default function GameCanvas() {
       scene.events.on("gameover", async (payload: { score: number }) => {
         const { score } = payload;
         console.log("Game Over, Score: ", score);
-
-        // await setScoreGraphQL(nickname, score);
-        // console.log("Score submitted successfully");
+        useGameStore.getState().setGameOverLoading(true);
 
         const response = await setScoreWebClient(nickname, score);
         console.log("Score submitted successfully", response);
+        useGameStore.getState().setGameOverLoading(false);
 
         useGameStore.getState().setGameScore(score);
         useGameStore.getState().setGameOver(true);

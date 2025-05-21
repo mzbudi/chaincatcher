@@ -7,6 +7,7 @@ export default function MainMenu() {
   const [started, setStarted] = useState(false);
   const [gameKey, setGameKey] = useState(0);
   const gameOver = useGameStore((state) => state.gameOver);
+  const gameOverLoading = useGameStore((state) => state.gameOverLoading);
 
   const handleStart = () => {
     // playBackgroundMusic();
@@ -32,6 +33,36 @@ export default function MainMenu() {
       ) : (
         <>
           <GameCanvas key={gameKey} />
+
+          {gameOverLoading && (
+            <div className="absolute top-3/4 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center space-x-4">
+              <div className="flex items-center space-x-4">
+                <span className="text-lg font-semibold">
+                  Submitting Score...
+                </span>
+                <svg
+                  className="animate-spin h-5 w-5 text-green-500"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    fill="none"
+                    strokeWidth="4"
+                    stroke="currentColor"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v8H4z"
+                  />
+                </svg>
+              </div>
+            </div>
+          )}
 
           {gameOver && (
             <div className="absolute top-3/4 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center space-x-4">
