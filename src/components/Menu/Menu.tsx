@@ -190,7 +190,7 @@ const Menu: React.FC<MenuProps> = ({ onStart }) => {
           {showModal && (
             <>
               <motion.div
-                className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-40"
+                className="fixed inset-0 bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-40"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
@@ -246,7 +246,7 @@ const Menu: React.FC<MenuProps> = ({ onStart }) => {
           {showInputNickname && (
             <>
               <motion.div
-                className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-40"
+                className="fixed inset-0 bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-40"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}

@@ -33,7 +33,7 @@ export default class PhaserGame extends Phaser.Scene {
   preload() {
     // load background
     // this.load.image("background", "/assets/myartthatdoesntwin.jpg");
-    this.load.image("background", "/assets/lab.jpg");
+    this.load.image("background", "/assets/lab.png");
     this.load.image("coin", "/assets/coin.png");
     this.load.image("basket", "/assets/basket.png");
     this.load.image("chain", "/assets/chain.png");
