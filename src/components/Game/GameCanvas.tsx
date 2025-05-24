@@ -6,6 +6,7 @@ import PhaserGame from "./PhaserGame";
 
 import { useGameStore } from "../../store/useGameStore";
 import { useLinera } from "../../Provider/LineraWebClientProvider";
+import { OWNER_CHAIN_ID } from "../../constants";
 
 const configPcCanvas: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
@@ -41,7 +42,7 @@ const configMobileCanvas: Phaser.Types.Core.GameConfig = {
 
 export default function GameCanvas() {
   const nickname = useGameStore((state) => state.nickname);
-  const { client, application } = useLinera();
+  const { client, application, chain } = useLinera();
 
   useEffect(() => {
     const isMobile = window.innerWidth < 800;
@@ -56,11 +57,12 @@ export default function GameCanvas() {
           const response = await application.query(
             JSON.stringify({
               query: `
-        mutation SetScore($name: String!, $score: Int!) {
-          setScore(name: $name, score: $score)
-        }
-      `,
+                mutation OperationMutationRoot($ownerChainId: ChainId!, $chainId: ChainId!, $name: String!, $score: Int!) {
+                  setScore(ownerChainId: $ownerChainId, chainId: $chainId, name: $name, score: $score)
+                }`,
               variables: {
+                ownerChainId: OWNER_CHAIN_ID,
+                chainId: chain?.toString() || "",
                 name: name,
                 score: score,
               },
@@ -106,7 +108,7 @@ export default function GameCanvas() {
       window.removeEventListener("resize", handleResize);
       game.destroy(true);
     };
-  }, [nickname, application, client]);
+  }, [nickname, application, client, chain]);
 
   return (
     <div className="flex items-center justify-center min-h-screen">

@@ -1,0 +1,2 @@
+export const OWNER_CHAIN_ID = "0b41858cc4b27876eef3f676d99f9e9b2e64ac428ee1cebd78c90c5beb7b73cc";
+export const APP_ID = "dbc5d7b515ea180ce13aec15b92c1850271f940d5740fd5bd34678a6c8dcb432"

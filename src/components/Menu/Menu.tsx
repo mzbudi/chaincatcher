@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 // import { useLineraStore } from "../../store/useLineraStore";
 import { useGameStore } from "../../store/useGameStore";
 import { useLinera } from "../../Provider/LineraWebClientProvider";
+import LeaderboardModal from "../Leaderboard/LeaderBoardModal";
 
 interface MenuProps {
   onStart: () => void;
@@ -12,6 +13,7 @@ interface MenuProps {
 const Menu: React.FC<MenuProps> = ({ onStart }) => {
   const [showModal, setShowModal] = useState(false);
   const [showInputNickname, setShowInputNickname] = useState(false);
+  const [openLeaderBoard, setOpenLeaderBoard] = useState(false);
   // const initialized = useLineraStore((state) => state.initialized);
   // const chain = useLineraStore((state) => state.chain);
   const nickname = useGameStore((state) => state.nickname);
@@ -30,7 +32,11 @@ const Menu: React.FC<MenuProps> = ({ onStart }) => {
             JSON.stringify({
               query: `
         query QueryRoot($name: String!) {
-          score(name: $name)
+          score(name: $name)  {
+            chainId
+            name
+            score
+          }
         }
       `,
               variables: {
@@ -51,8 +57,10 @@ const Menu: React.FC<MenuProps> = ({ onStart }) => {
 
     const fetchScores = async () => {
       const scores = await getScoreWebClient(nickname);
-      if (scores) {
-        useGameStore.getState().setHighScore(scores);
+      console.log("Scores:", scores);
+      
+      if (scores.score) {
+        useGameStore.getState().setHighScore(scores.score);
       } else {
         console.log("No score found for this nickname");
       }
@@ -149,12 +157,12 @@ const Menu: React.FC<MenuProps> = ({ onStart }) => {
                 How to play
               </button>
 
-              {/* <button
-                className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-xl text-lg font-semibold"
-                onClick={getValueWebClient}
+              <button
+                className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-xl text-lg font-semibold"
+                onClick={() => setOpenLeaderBoard(true)}
               >
-                test hit
-              </button> */}
+                Leaderboard 🏆
+              </button>
             </div>
             <p className="mt-4 text-gray-900 p-4 bg-amber-400 rounded-xl max-w-md mx-auto text-center font-semibold break-words whitespace-normal">
               Chain ID: <strong>{chain}</strong>
@@ -286,6 +294,10 @@ const Menu: React.FC<MenuProps> = ({ onStart }) => {
             </>
           )}
         </AnimatePresence>
+        <LeaderboardModal
+          open={openLeaderBoard}
+          onClose={() => setOpenLeaderBoard(false)}
+        />
       </div>
     </>
   );

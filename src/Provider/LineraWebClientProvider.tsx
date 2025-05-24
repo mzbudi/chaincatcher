@@ -7,6 +7,7 @@ import React, {
 } from "react";
 import * as linera from "@linera/client";
 import { Client, Wallet, Faucet, Application } from "@linera/client";
+import { APP_ID } from "../constants";
 
 interface LineraCtx {
   client?: Client | null;
@@ -47,11 +48,7 @@ export const LineraProvider: React.FC<{ children: ReactNode }> = ({
         const chain = await faucet.claimChain(client);
         console.log("Chain Id:", chain);
 
-        const application = await client
-          .frontend()
-          .application(
-            "24afe51575e6bd6add94f3dd45a2d6eaded5fbc29f538404af6dc3273219a3b6"
-          );
+        const application = await client.frontend().application(APP_ID);
 
         setState((prevState) => ({
           ...prevState,
@@ -61,22 +58,6 @@ export const LineraProvider: React.FC<{ children: ReactNode }> = ({
           application,
           status: "Ready",
         }));
-
-        // const getValueWebClient = async () => {
-        //   if (application && clientInstance) {
-        //     try {
-        //       const response = await application.query(
-        //         '{ "query": "query { value }" }'
-        //       );
-
-        //       console.log("Value :", response);
-        //     } catch (error) {
-        //       console.error("Error retrieving scores:", error);
-        //     }
-        //   }
-        // };
-
-        // getValueWebClient();
       } catch (err) {
         console.error("Linera init error", err);
         setState((prevState) => ({
