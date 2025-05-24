@@ -12,7 +12,7 @@ export default class PhaserGame extends Phaser.Scene {
   private viruses!: Phaser.Physics.Arcade.Group;
   private score: number = 0;
   private scoreText!: Phaser.GameObjects.Text;
-  private timeLeft: number = 5;
+  private timeLeft: number = 60;
   private timerText!: Phaser.GameObjects.Text;
   private timers: Phaser.Time.TimerEvent[] = [];
   // private collectSound!: Phaser.Sound.BaseSound;
