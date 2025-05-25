@@ -40,7 +40,7 @@ export default function LeaderboardModal({
       if (application && client) {
         try {
           // Sync Leaderboard to own chain
-          await application.query(
+          const syncLeaderboard = await application.query(
             JSON.stringify({
               query: `
                 mutation OperationMutationRoot($centralChainId: ChainId!) {
@@ -51,6 +51,11 @@ export default function LeaderboardModal({
               },
             })
           );
+
+          console.log("Leaderboard sync response:", syncLeaderboard);
+
+          // wait 3 seconds for sync to complete
+          await new Promise((resolve) => setTimeout(resolve, 3000));
 
           const response = await application.query(
             JSON.stringify({
