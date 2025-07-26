@@ -158,7 +158,7 @@ export default function LeaderboardModal({
                   );
                 })
               ) : (
-                <p className="text-center text-gray-500">No data yet.</p>
+                <p className="text-center text-gray-500">No data yet. Please wait for your chain to sync data and come back later</p>
               )}
             </ol>
             {paginatedLeaderboard.length > 0 && (
