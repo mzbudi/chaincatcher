@@ -40,13 +40,13 @@ export const LineraProvider: React.FC<{ children: ReactNode }> = ({
         await linera.default();
 
         // const faucet = new linera.Faucet("http://localhost:8080");
-        // const faucet = new linera.Faucet(
-        //   "https://faucet.testnet-babbage.linera.net"
-        // );
-        // Testnet Conway
         const faucet = new linera.Faucet(
-          "https://faucet.testnet-conway.linera.net"
+          "https://faucet.testnet-babbage.linera.net"
         );
+        // Testnet Conway
+        // const faucet = new linera.Faucet(
+        //   "https://faucet.testnet-conway.linera.net"
+        // );
         const wallet = await faucet.createWallet();
         const client = await new linera.Client(wallet);
         const chain = await faucet.claimChain(client);
